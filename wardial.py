@@ -37,7 +37,6 @@ def increment_ip(ip):
     return '.'.join([str(octet) for octet in octets])
 
 
-
 def enumerate_ips(start_ip, n):
     '''
     Yield the next `n` ips beginning with `start_ip`.
