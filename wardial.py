@@ -44,7 +44,7 @@ def enumerate_ips(start_ip, n):
     ['192.168.1.0', '192.168.1.1']
     >>> list(enumerate_ips('8.8.8.8', 10))
     ['8.8.8.8', '8.8.8.9', '8.8.8.10', '8.8.8.11', '8.8.8.12', '8.8.8.13', '8.8.8.14', '8.8.8.15', '8.8.8.16', '8.8.8.17']
-    The following tests ensure that the correct number of ips get returned as a generator, and not a list.
+    #The following tests ensure that the correct number of ips get returned as a generator, and not a list.
     Ensuring that the return type is a generator is a proxy for testing for space efficiency of the function.
     >>> type(enumerate_ips('8.8.8.8', 10))
     <class 'generator'>
@@ -68,13 +68,13 @@ def netmask_to_ips(netmask):
     Google is assigned the following netblock (among many others as well):
     >>> len(list(netmask_to_ips('104.154.0.0/15')))
     131072
-    The Claremont Colleges are assigned the following netblock:
+    #The Claremont Colleges are assigned the following netblock:
     >>> len(list(netmask_to_ips('134.173.0.0/16')))
     65536
-    North Korea is assigned the following netblock:
+    #North Korea is assigned the following netblock:
     >>> len(list(netmask_to_ips('175.45.176.0/22')))
     1024
-    The following tests ensure that the ips returned match the correct range:
+    #The following tests ensure that the ips returned match the correct range:
     >>> list(netmask_to_ips('134.173.0.0/16'))[0]
     '134.173.0.0'
     >>> list(netmask_to_ips('134.173.0.0/16'))[-1]
