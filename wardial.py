@@ -148,14 +148,17 @@ async def _wardial_async(hosts, max_connections=500, timeout=10, schema='http'):
     >>> loop.run_until_complete(_wardial_async(['google.com', 'bad-domain-name', 'microsoft.com']))
     [True, False, True]
     >>> loop.close()
+    
     NOTE:
     Testing IO functions is made extra hard because they rely on IO performing correctly.
     The tests above won't work if the google.com or microsoft.com webpages go down.
+    
     NOTE:
     This is a helper function for the wardial function.
     In python, functions prefixed with an underscore are intended to be thought of as "private" or "internal" functions,
     and not as functions that should be called directly by a user.
     '''
+    
     connector = aiohttp.TCPConnector(
         limit=max_connections,
         limit_per_host=1,
