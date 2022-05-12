@@ -6,7 +6,6 @@ import logging
 def increment_ip(ip):
     '''
     Return the "next" IPv4 address.
-
     >>> increment_ip('1.2.3.4')
     '1.2.3.5'
     >>> increment_ip('1.2.3.255')
@@ -38,18 +37,16 @@ def increment_ip(ip):
     return '.'.join([str(octet) for octet in octets])
 
 
+
 def enumerate_ips(start_ip, n):
     '''
     Yield the next `n` ips beginning with `start_ip`.
-
     >>> list(enumerate_ips('192.168.1.0', 2))
     ['192.168.1.0', '192.168.1.1']
     >>> list(enumerate_ips('8.8.8.8', 10))
     ['8.8.8.8', '8.8.8.9', '8.8.8.10', '8.8.8.11', '8.8.8.12', '8.8.8.13', '8.8.8.14', '8.8.8.15', '8.8.8.16', '8.8.8.17']
-
     The following tests ensure that the correct number of ips get returned as a generator, and not a list.
     Ensuring that the return type is a generator is a proxy for testing for space efficiency of the function.
-
     >>> type(enumerate_ips('8.8.8.8', 10))
     <class 'generator'>
     >>> len(list(enumerate_ips('8.8.8.8', 10)))
@@ -69,44 +66,32 @@ def netmask_to_ips(netmask):
     '''
     A netmask is a convenient shorthand for describing a range of consecutive ip addresses.
     For details on the format, see: <https://www.hacksplaining.com/glossary/netmasks>
-
     Google is assigned the following netblock (among many others as well):
-
     >>> len(list(netmask_to_ips('104.154.0.0/15')))
     131072
-
     The Claremont Colleges are assigned the following netblock:
-
     >>> len(list(netmask_to_ips('134.173.0.0/16')))
     65536
-
     North Korea is assigned the following netblock:
-
     >>> len(list(netmask_to_ips('175.45.176.0/22')))
     1024
-
     The following tests ensure that the ips returned match the correct range:
-
     >>> list(netmask_to_ips('134.173.0.0/16'))[0]
     '134.173.0.0'
     >>> list(netmask_to_ips('134.173.0.0/16'))[-1]
     '134.173.255.255'
-
     >>> list(netmask_to_ips('134.173.55.0/16'))[0]
     '134.173.0.0'
     >>> list(netmask_to_ips('134.173.55.0/16'))[-1]
     '134.173.255.255'
-
     >>> list(netmask_to_ips('134.173.0.55/16'))[0]
     '134.173.0.0'
     >>> list(netmask_to_ips('134.173.0.55/16'))[-1]
     '134.173.255.255'
-
     >>> list(netmask_to_ips('134.173.255.255/16'))[0]
     '134.173.0.0'
     >>> list(netmask_to_ips('134.173.255.255/16'))[-1]
     '134.173.255.255'
-
     >>> list(netmask_to_ips('208.97.177.235/24'))[0]
     '208.97.177.0'
     >>> list(netmask_to_ips('208.97.177.235/24'))[-1]
@@ -159,23 +144,19 @@ async def _wardial_async(hosts, max_connections=500, timeout=10, schema='http'):
     '''
     For each host in `hosts`, check whether there is a server.
     Returns a list of Bools the same length as `hosts.
-
     NOTE:
     Writing tests for async functions is rather awkward.
     The functions need an event loop to run,
     and so the tests contain a lot of boilerplate overhead.
-
     >>> loop = asyncio.new_event_loop()
     >>> loop.run_until_complete(_wardial_async(['google.com']))
     [True]
     >>> loop.run_until_complete(_wardial_async(['google.com', 'bad-domain-name', 'microsoft.com']))
     [True, False, True]
     >>> loop.close()
-
     NOTE:
     Testing IO functions is made extra hard because they rely on IO performing correctly.
     The tests above won't work if the google.com or microsoft.com webpages go down.
-
     NOTE:
     This is a helper function for the wardial function.
     In python, functions prefixed with an underscore are intended to be thought of as "private" or "internal" functions,
@@ -206,21 +187,18 @@ async def _wardial_async(hosts, max_connections=500, timeout=10, schema='http'):
         # Modify the code to use the `asyncio.gather` function to enable concurrency.
         results = []
         for host in hosts:
-            results.append(await is_server_at_host(session,host))
-        return results
+            results.append(is_server_at_host(session,host))
+        return await asyncio.gather(*results)
 
 
 def wardial(hosts, **kwargs):
     '''
     Filter the `hosts` input to keep only those hosts with webservers running.
     Internally, this function will use aiohttp to make concurrent connections.
-
     >>> wardial(['facebook.com', 'google.com', 'github.com', 'amazon.com', 'microsoft.com', 'netflix.com'])
     ['facebook.com', 'google.com', 'github.com', 'amazon.com', 'microsoft.com', 'netflix.com']
-
     >>> wardial(['208.97.176.235', '23.185.0.2', '142.250.72.174'])
     ['208.97.176.235', '23.185.0.2', '142.250.72.174']
-
     >>> len(wardial(netmask_to_ips('134.173.32.22/24'))) > 1
     True
     '''
@@ -230,7 +208,11 @@ def wardial(hosts, **kwargs):
     # and use this event loop to call the `_wardial_async` function.
     # Ensure that all of the kwargs parameters get passed to `_wardial_async`.
     # You will have to do some post-processing of the results of this function to convert the output.
-    return []
+    hosts = list(hosts)
+    loop=asyncio.new_event_loop()
+    results = loop.run_until_complete(_wardial_async(hosts))
+    loop.close()
+    return [r for i,r in enumerate(hosts) if results[i]==True]
 
 if __name__=='__main__':
 
